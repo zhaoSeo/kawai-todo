@@ -9,13 +9,14 @@ const { width, height } = Dimensions.get("window")
 export default class App extends React.Component {
   state = {
     newToDo: "",
-    loadedToDos: false
+    loadedToDos: false,
+    toDos: {}
   }
   componentDidMount = () => {
     this._loadToDos()
   }
   render() {
-    const { newToDo, loadedToDos } = this.state;
+    const { newToDo, loadedToDos, toDos } = this.state;
     if(!loadedToDos) {
       return <AppLoading />
     }
@@ -35,7 +36,7 @@ export default class App extends React.Component {
             onSubmitEditing={this._addToDo}
           />
           <ScrollView contentContainerStyle={styles.toDos}>
-            <ToDo text={"hello world"}/>
+            {Object.values(toDos).map(toDo => <ToDo key={toDo.id} {...toDo} deleteToDO={this._deleteToDo} />)}
           </ScrollView>
         </View>
       </View>
@@ -75,6 +76,17 @@ export default class App extends React.Component {
         return { ...newState }
       })
     }
+  }
+  _deleteToDo = (id) => {
+    this.setState(prevState => {
+      const toDos = prevState.toDos
+      delete toDos[id]
+      const newState = {
+        ...prevState,
+        ...toDos
+      }
+      return { ...newState }
+    })
   }
 }
 
